@@ -1,30 +1,37 @@
 import React, { useRef } from "react";
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function LoginModal() {
     const loginEmailRef = useRef(null);
     const loginPasswordRef = useRef(null);
 
-    const handleLogin = (event) => {
+    const handleLogin = async (event) => {
         event.preventDefault();
 
         const email = loginEmailRef.current.value;
         const password = loginPasswordRef.current.value;
 
-        // Kirim data login ke backend
-        axios.post("http://localhost:8000/api/login", {
-            email: email,
-            password: password
-        })
-        .then(response => {
-            // Tangani respons dari server
-            console.log(response.data);
-            // Lakukan sesuatu setelah login berhasil, misalnya, menyimpan token di local storage
-        })
-        .catch(error => {
+        try {
+            const response = await axios.post("http://localhost:8000/api/login", {
+                email: email,
+                password: password
+            });
+
+            if (response.data.success) {
+                // Jika respons dari server menunjukkan login berhasil
+                console.log(response.data);
+                toast.success("Login berhasil");
+            } else {
+                // Jika respons dari server menunjukkan login gagal
+                toast.error("Login gagal. Email atau password salah.");
+            }
+        } catch (error) {
             // Tangani kesalahan
             console.error(error);
-        });
+            toast.error("Terjadi kesalahan saat melakukan login.");
+        }
     };
 
     return (
@@ -50,6 +57,7 @@ export default function LoginModal() {
                     </div>
                 </div>
             </div>
+            <ToastContainer />
         </div>
     );
 }

@@ -9,7 +9,7 @@ import LoginModal from "./components/Login";
 function App() {
   return (
     <>
-      <RegisterModal/>
+      <RegisterModal />
       <LoginModal/>
       <Header/>
       <Home/>
@@ -19,3 +19,4 @@ function App() {
 }
 
 export default App;
+
