@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import axios from "axios";
 
 const RegisterModal = () => {
@@ -10,23 +10,10 @@ const RegisterModal = () => {
     const [registerError, setRegisterError] = useState("");
     const [registerSuccess, setRegisterSuccess] = useState(false);
 
-    useEffect(() => {
-        const modalElement = document.getElementById("registerModal");
-        modalElement.addEventListener("hidden.bs.modal", () => {
-            setRegisterError("");
-            setRegisterSuccess(false);
-        });
-
-        return () => {
-            modalElement.removeEventListener("hidden.bs.modal", () => {
-                setRegisterError("");
-                setRegisterSuccess(false);
-            });
-        };
-    }, []);
-
     const handleRegister = async (event) => {
         event.preventDefault();
+        setRegisterError("");
+        setRegisterSuccess(false); // Menyembunyikan pesan sukses sebelum mencoba registrasi lagi
 
         const name = registerNameRef.current.value;
         const email = registerEmailRef.current.value;
@@ -50,9 +37,7 @@ const RegisterModal = () => {
 
             if (response.data.success) {
                 console.log(response.data);
-                setRegisterError("");
                 setRegisterSuccess(true);
-                // onRegisterSuccess(); // Panggil prop onRegisterSuccess
             } else {
                 setRegisterError("Register gagal. Silahkan isi data dengan benar.");
             }
@@ -60,6 +45,11 @@ const RegisterModal = () => {
             console.error("Failed to register: ", error);
             setRegisterError("Maaf, Email sudah terdaftar.");
         }
+    };
+
+    const handleInputChange = () => {
+        setRegisterError("");
+        setRegisterSuccess(false); // Menyembunyikan pesan sukses saat ada inputan baru
     };
 
     return (
@@ -76,25 +66,25 @@ const RegisterModal = () => {
                         <form onSubmit={handleRegister}>
                             <div className="mb-3">
                                 <label htmlFor="registerName" className="form-label">Name</label>
-                                <input type="text" className="form-control" id="registerName" ref={registerNameRef} />
+                                <input type="text" className="form-control" id="registerName" ref={registerNameRef} onChange={handleInputChange} />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="registerEmail" className="form-label">Email address</label>
-                                <input type="email" className="form-control" id="registerEmail" ref={registerEmailRef} />
+                                <input type="email" className="form-control" id="registerEmail" ref={registerEmailRef} onChange={handleInputChange} />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="registerPhone" className="form-label">Phone</label>
-                                <input type="text" className="form-control" id="registerPhone" ref={registerPhoneRef} />
+                                <input type="text" className="form-control" id="registerPhone" ref={registerPhoneRef} onChange={handleInputChange} />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="registerPassword" className="form-label">Password</label>
-                                <input type="password" className="form-control" id="registerPassword" ref={registerPasswordRef} />
+                                <input type="password" className="form-control" id="registerPassword" ref={registerPasswordRef} onChange={handleInputChange} />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
-                                <input type="password" className="form-control" id="confirmPassword" ref={confirmPasswordRef} />
+                                <input type="password" className="form-control" id="confirmPassword" ref={confirmPasswordRef} onChange={handleInputChange} />
                             </div>
-                            <button type="submit" className="btn btn-primary">Register</button>
+                            <button type="submit" className="btn btn-primary" onClick={handleInputChange}>Register</button>
                         </form>
                     </div>
                 </div>

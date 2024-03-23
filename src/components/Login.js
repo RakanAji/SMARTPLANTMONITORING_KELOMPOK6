@@ -1,11 +1,25 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
-export default function LoginModal() {
+const LoginModal = () => {
     const loginEmailRef = useRef(null);
     const loginPasswordRef = useRef(null);
+    const [loginError, setLoginError] = useState("");
+    const [loginSuccess, setLoginSuccess] = useState(false);
+
+    useEffect(() => {
+        const modalElement = document.getElementById("loginModal");
+        modalElement.addEventListener("hidden.bs.modal", handleModalHidden);
+
+        return () => {
+            modalElement.removeEventListener("hidden.bs.modal", handleModalHidden);
+        };
+    }, []);
+
+    const handleModalHidden = () => {
+        setLoginError("");
+        setLoginSuccess(false);
+    };
 
     const handleLogin = async (event) => {
         event.preventDefault();
@@ -13,25 +27,32 @@ export default function LoginModal() {
         const email = loginEmailRef.current.value;
         const password = loginPasswordRef.current.value;
 
+        if (!email || !password) {
+            setLoginError("Email dan password harus diisi.");
+            return;
+        }
+
         try {
             const response = await axios.post("http://localhost:8000/api/login", {
-                email: email,
-                password: password
+                email,
+                password
             });
 
             if (response.data.success) {
-                // Jika respons dari server menunjukkan login berhasil
-                console.log(response.data);
-                toast.success("Login berhasil");
+                setLoginError("");
+                setLoginSuccess(true);
             } else {
-                // Jika respons dari server menunjukkan login gagal
-                toast.error("Login gagal. Email atau password salah.");
+                setLoginError("Login gagal. Email atau password salah.");
             }
         } catch (error) {
-            // Tangani kesalahan
-            console.error(error);
-            toast.error("Terjadi kesalahan saat melakukan login.");
+            console.error("Failed to login: ", error);
+            setLoginError("Terjadi kesalahan saat melakukan login.");
         }
+    };
+
+    const handleInputChange = () => {
+        setLoginError("");
+        setLoginSuccess(false);
     };
 
     return (
@@ -43,21 +64,24 @@ export default function LoginModal() {
                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div className="modal-body">
+                        {loginError && <div className="alert alert-danger">{loginError}</div>}
+                        {loginSuccess && <div className="alert alert-success">Login berhasil!</div>}
                         <form onSubmit={handleLogin}>
                             <div className="mb-3">
                                 <label htmlFor="loginEmail" className="form-label">Email address</label>
-                                <input type="email" className="form-control" id="loginEmail" ref={loginEmailRef} />
+                                <input type="email" className="form-control" id="loginEmail" ref={loginEmailRef} onChange={handleInputChange} />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="loginPassword" className="form-label">Password</label>
-                                <input type="password" className="form-control" id="loginPassword" ref={loginPasswordRef} />
+                                <input type="password" className="form-control" id="loginPassword" ref={loginPasswordRef} onChange={handleInputChange} />
                             </div>
                             <button type="submit" className="btn btn-primary">Login</button>
                         </form>
                     </div>
                 </div>
             </div>
-            <ToastContainer />
         </div>
     );
 }
+
+export default LoginModal;
