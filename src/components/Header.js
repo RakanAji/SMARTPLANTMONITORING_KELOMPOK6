@@ -20,6 +20,9 @@ function Header() {
                 <li className="nav-item"><a className="nav-link" href="pricing.html">Profile Team</a></li>
                 <li className="nav-item"><a className="nav-link" href="contact.html">Contact</a></li>
                 <li className="nav-item"><a className="nav-link" href="faq.html">Rincian Alat</a></li>
+                {/* Tambahkan tombol login dan register */}
+                <li className="nav-item"><button className="nav-link btn btn-link" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button></li>
+                <li className="nav-item"><button className="nav-link btn btn-link" data-bs-toggle="modal" data-bs-target="#registerModal">Register</button></li>
                 
                 </ul>
             </div>
